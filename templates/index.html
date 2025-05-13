@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minneapolis Weather</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Minneapolis Weather</h1>
+        
+        <!-- This is a debug section that prints out all the values returned from the API. 
+              To use it, uncomment the div element called debug.-->
+        <!--<div class="debug">
+            <h3>Debug Info</h3>
+            <pre>{{ weather|pprint }}</pre>
+        </div>-->
+        
+        {% if weather and weather.current %}
+            <div class="current-weather">
+                <h2>Current Weather</h2>
+                <div class="temperature">{{ weather.current.temperature_2m }} °F</div>
+                <div class="time">Updated: {{ weather.current.time }}</div>
+                
+                <div class="weather-details">
+                    <div class="detail">
+                        <h3>Wind</h3>
+                        <p>{{ weather.current.wind_speed_10m }} mph</p>
+                        <p>Direction: {{ weather.current.wind_direction_10m }}°</p>
+                    </div>
+                    <div class="detail">
+                        <h3>Precipitation</h3>
+                        <p>Rain: {{ weather.current.rain }} in</p>
+                        <p>Snow: {{ weather.current.snowfall }} in</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="forecast">
+                <h2>7-Day Forecast</h2>
+                <div class="forecast-grid">
+                    {% for i in range(weather.daily.time|length) %}
+                        <div class="forecast-day">
+                            <div class="forecast-date">{{ weather.daily.time[i] }}</div>
+                            <div class="forecast-temp">
+                                <span class="high-temp">{{ weather.daily.temperature_2m_max[i] }}°F</span> / 
+                                <span class="low-temp">{{ weather.daily.temperature_2m_min[i] }}°F</span>
+                            </div>
+                            <div class="weather-code">
+                                {% set code = weather.daily.weather_code[i] %}
+                                {% if code == 0 %}Clear sky
+                                {% elif code == 1 %}Mainly clear
+                                {% elif code == 2 %}Partly cloudy
+                                {% elif code == 3 %}Overcast
+                                {% elif code in [45, 48] %}Fog
+                                {% elif code in [51, 53, 55] %}Drizzle
+                                {% elif code in [61, 63, 65] %}Rain
+                                {% elif code in [71, 73, 75] %}Snow
+                                {% elif code in [80, 81, 82] %}Rain showers
+                                {% elif code in [95, 96, 99] %}Thunderstorm
+                                {% else %}Weather code: {{ code }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>Weather data is currently unavailable.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
